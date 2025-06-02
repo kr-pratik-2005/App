@@ -633,6 +633,10 @@ const Home = () => {
     fetchDailyReports();
   }, []);
 
+  useEffect(() => {
+  console.log('Kids data:', kids);
+}, [kids]);
+
   return (
     <div style={styles.container}>
       {/* Header */}

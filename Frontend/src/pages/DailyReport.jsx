@@ -73,12 +73,12 @@ const DailyReport = () => {
   const [availableThemes, setAvailableThemes] = useState([]);
 
   const feelingsOptions = [
-    { label: 'Happy', emoji: '😊' },
-    { label: 'Sad', emoji: '😢' },
-    { label: 'Restless', emoji: '😕' },
-    { label: 'Quiet', emoji: '😌' },
-    { label: 'Playful', emoji: '😜' },
-    { label: 'Sick', emoji: '🤒' }
+    { label: 'Happy' },
+    { label: 'Sad' },
+    { label: 'Restless' },
+    { label: 'Quiet' },
+    { label: 'Playful' },
+    { label: 'Sick' }
   ];
   const radioOptions = [0, 1, 2, 3, 4];
 
@@ -333,413 +333,569 @@ const DailyReport = () => {
     }
   };
 
-  // Styles
-  const styles = {
-    container: { 
-      padding: '20px', 
-      fontFamily: 'Inter, Arial, sans-serif', 
-      background: 'linear-gradient(135deg, #ffecd2, #fcb69f)', 
-      minHeight: '100vh' 
-    },
-    header: { 
-      textAlign: 'center', 
-      marginBottom: '20px', 
-      color: '#A62C2C' 
-    },
-    dateDisplay: { 
-      textAlign: 'center', 
-      marginBottom: '20px', 
-      fontSize: '18px', 
-      fontWeight: 'bold', 
-      color: '#4e342e' 
-    },
-    gridContainer: { 
-      display: 'flex', 
-      flexWrap: 'wrap', 
-      gap: '20px', 
-      justifyContent: 'center' 
-    },
-    reportBox: { 
-      width: '150px', 
-      height: '150px', 
-      backgroundColor: '#fffbee', 
-      display: 'flex', 
-      flexDirection: 'column',
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      borderRadius: '8px', 
-      boxShadow: '0 4px 8px rgba(0,0,0,0.1)', 
-      cursor: 'pointer', 
-      textAlign: 'center',
-      position: 'relative'
-    },
-    reportStatus: {
-      position: 'absolute',
-      top: '8px',
-      right: '8px',
-      fontSize: '12px',
-      padding: '2px 6px',
-      borderRadius: '10px',
-      fontWeight: 'bold'
-    },
-    reportStatusSubmitted: {
-      backgroundColor: '#d4edda',
-      color: '#155724'
-    },
-    reportStatusPending: {
-      backgroundColor: '#fff3cd',
-      color: '#856404'
-    },
-    formContainer: { 
-      backgroundColor: '#fffbee', 
-      padding: '30px', 
-      borderRadius: '15px', 
-      boxShadow: '0 8px 16px rgba(0,0,0,0.1)', 
-      maxWidth: '700px', 
-      margin: '0 auto' 
-    },
-    label: { 
-      fontWeight: '600', 
-      marginBottom: '5px', 
-      display: 'block' 
-    },
-    input: { 
-      width: '95%', 
-      padding: '12px',	
-      marginBottom: '15px', 
-      borderRadius: '8px', 
-      border: '1px solid #ffc107', 
-      fontSize: '15px', 
-      outline: 'none' 
-    },
-    inputTime: { 
-      width: '90%', 
-      padding: '12px', 
-      marginBottom: '15px', 
-      borderRadius: '8px', 
-      border: '1px solid #ffc107', 
-      fontSize: '15px', 
-      outline: 'none' 
-    },
-    radioGroup: { 
-      display: 'flex', 
-      gap: '10px', 
-      marginBottom: '15px' 
-    },
-    inlineContainer: { 
-      display: 'flex', 
-      gap: '30px', 
-      marginBottom: '15px' 
-    },
-    button: { 
-      width: '100%', 
-      background: '#fcb69f', 
-      color: '#4e342e', 
-      fontWeight: '600', 
-      fontSize: '16px', 
-      padding: '15px', 
-      border: 'none', 
-      borderRadius: '30px', 
-      cursor: 'pointer', 
-      marginBottom: '10px' 
-    },
-    backButton: { 
-      backgroundColor: '#A62C2C', 
-      color: '#fff', 
-      padding: '10px 20px', 
-      border: 'none', 
-      borderRadius: '6px', 
-      cursor: 'pointer', 
-      display: 'block', 
-      margin: '20px auto 0' 
+ const styles = {
+  container: { 
+    padding: '0', 
+    fontFamily: 'Inter, Arial, sans-serif', 
+    background: '#f8f9fa', 
+    minHeight: '100vh',
+    maxWidth: '100%'
+  },
+  header: { 
+    textAlign: 'left', 
+    marginBottom: '0px', 
+    color: '#333',
+    fontSize: '18px',
+    fontWeight: '600',
+    padding: '16px 20px',
+    backgroundColor: '#fff',
+    borderBottom: '1px solid #e9ecef',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  },
+  backArrow: {
+    fontSize: '18px',
+    cursor: 'pointer',
+    color: '#666'
+  },
+  dateDisplay: { 
+    display: 'none' // Hide the date display since it's not in the mobile UI
+  },
+  gridContainer: { 
+    display: 'flex', 
+    flexWrap: 'wrap', 
+    gap: '20px', 
+    justifyContent: 'center' 
+  },
+  reportBox: { 
+    width: '150px', 
+    height: '150px', 
+    backgroundColor: '#fffbee', 
+    display: 'flex', 
+    flexDirection: 'column',
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    borderRadius: '8px', 
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)', 
+    cursor: 'pointer', 
+    textAlign: 'center',
+    position: 'relative',
+    marginTop: '20px'
+  },
+  reportStatus: {
+    position: 'absolute',
+    top: '8px',
+    right: '8px',
+    fontSize: '12px',
+    padding: '2px 6px',
+    borderRadius: '10px',
+    fontWeight: 'bold'
+  },
+  reportStatusSubmitted: {
+    backgroundColor: '#d4edda',
+    color: '#155724'
+  },
+  reportStatusPending: {
+    backgroundColor: '#fff3cd',
+    color: '#856404'
+  },
+  formContainer: { 
+    backgroundColor: '#fff', 
+    padding: '0', 
+    borderRadius: '0', 
+    boxShadow: 'none', 
+    maxWidth: '100%', 
+    margin: '0',
+    minHeight: '100vh'
+  },
+  formContent: {
+    padding: '20px'
+  },
+  label: { 
+    fontWeight: '800', 
+    marginBottom: '8px', 
+    paddingBottom: '2px',
+    display: 'block',
+    color: '#565657',
+    fontSize: '14px'
+  },
+  // Dropdown styles
+  select: {
+    width: '100%',
+    padding: '12px 16px',
+    marginBottom: '20px',
+    borderRadius: '20px',
+    border: '1px solid #e9ecef',
+    fontSize: '16px',
+    outline: 'none',
+    backgroundColor: '#fff',
+    appearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+    backgroundPosition: 'right 12px center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: '16px'
+  },
+  input: { 
+    width: '100%', 
+    padding: '12px 16px',	
+    marginBottom: '20px', 
+    borderRadius: '8px', 
+    border: '1px solid #e9ecef', 
+    fontSize: '16px', 
+    outline: 'none',
+    backgroundColor: '#fff',
+    boxSizing: 'border-box'
+  },
+  inputTime: { 
+    width: '100%', 
+    padding: '12px 16px', 
+    marginBottom: '20px', 
+    borderRadius: '8px', 
+    border: '1px solid #e9ecef', 
+    fontSize: '16px', 
+    outline: 'none',
+    backgroundColor: '#fff'
+  },
+  // Time container for In/Out times
+  timeContainer: {
+    display: 'flex',
+    gap: '20px',
+    marginBottom: '20px',
+   
+  },
+  timeField: {
+    flex: 1,
+
+  },
+  timeLabel: {
+    fontSize: '14px',
+    fontWeight: '800',
+    marginBottom: '4px',
+    marginLeft: '4px',
+    paddingBottom:'6px',
+    display: 'block',
+    color: '#565657',
+
+  },
+  // Button group styles (like the toggle buttons in image)
+  buttonGroup: {
+     display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)', 
+    gap: '8px',
+    marginBottom: '20px'
+  },
+  toggleButton: {
+    padding: '10px 40px',
+    borderRadius: '20px',
+    border: 'none',
+    fontSize: '14px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    backgroundColor: '#5A5B5F',
+    color: '#ffffff',
+    fontWeight: 'bold',
+  },
+  toggleButtonActive: {
+    backgroundColor: '#D3F26A',
+    color: '#5A5B5F'
+  },
+  // Checkbox styles for feelings
+  checkboxContainer: {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, 1fr)', 
+  gap: '8px',
+  marginBottom: '20px'
+},
+  checkboxButton: {
+    padding: '8px 12px',
+    borderRadius: '16px',
+    border: 'none',
+    fontSize: '14px',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    backgroundColor: '#5A5B5F',
+    color: '#ffffff',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent:'center',
+    gap: '4px',
+    fontWeight: 'bold',
+  },
+  checkboxButtonActive: {
+    backgroundColor: '#D3F26A',
+    color: '#5A5B5F'
+  },
+  // Photo upload area
+  photoUpload: {
+    border: '2px solid #e9ecef',
+    borderRadius: '20px',
+    padding: '40px 20px',
+    textAlign: 'center',
+    marginBottom: '20px',
+    backgroundColor: '#ffffff',
+    cursor: 'pointer'
+  },
+  photoUploadIcon: {
+    fontSize: '24px',
+    marginBottom: '8px',
+    color: '#999'
+  },
+  photoUploadText: {
+  fontSize: '14px',
+  fontWeight: 'bold',
+  color: '#98989A'
+  },
+  // Submit button
+  submitButton: {
+    width: '100%',
+    background: '#D3F26A',
+    color: '#565657',
+    fontWeight: '600',
+    fontSize: '16px',
+    padding: '16px',
+    border: 'none',
+    borderRadius: '20px',
+    cursor: 'pointer',
+    margin: '20px 0'
+  },
+  backButton: { 
+    backgroundColor: 'transparent', 
+    color: '#666', 
+    padding: '10px 20px', 
+    border: 'none', 
+    cursor: 'pointer', 
+    display: 'block', 
+    margin: '20px auto 0' 
+  },
+
+  
+  // Responsive styles
+  '@media (min-width: 768px)': {
+    formContainer: {
+      maxWidth: '500px',
+      margin: '0 auto',
+      borderRadius: '12px',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      marginTop: '20px'
     }
-  };
+  }
+};
 
-  return (
-    <div style={styles.container}>
-      <h1 style={styles.header}>Today's Daily Reports</h1>
-      <div style={styles.dateDisplay}>
-        📅 {new Date(today).toLocaleDateString('en-US', { 
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
-        })}
-      </div>
-      
-      {!selectedReport ? (
-        <>
-          {reports.length === 0 ? (
-            <p style={{ textAlign: 'center' }}>No children are present today.</p>
-          ) : (
-            <div style={styles.gridContainer}>
-              {reports.map((report, idx) => {
-                const colors = ['#A0C4FF','#FFD6A5','#FFC6FF','#FDFFB6','#CAFFBF','#9BF6FF','#BDB2FF','#FFC6FF'];
-                const hasSubmittedReport = report.id !== null;
-                
-                return (
-                  <div
-                    key={`${report.childName}-${idx}`}
-                    style={{ ...styles.reportBox, backgroundColor: colors[idx % colors.length] }}
-                    onClick={() => handleReportSelect(report)}
+return (
+  <div style={styles.container}>
+    {!selectedReport ? (
+      <>
+        <div style={styles.header}>
+          <span style={styles.backArrow} onClick={() => navigate('/')}>
+            ←
+          </span>
+          Daily Updates
+        </div>
+        
+        {reports.length === 0 ? (
+          <p style={{ textAlign: 'center', padding: '20px' }}>No children are present today.</p>
+        ) : (
+          <div style={styles.gridContainer}>
+            {reports.map((report, idx) => {
+              const colors = ['#A0C4FF','#FFD6A5','#FFC6FF','#FDFFB6','#CAFFBF','#9BF6FF','#BDB2FF','#FFC6FF'];
+              const hasSubmittedReport = report.id !== null;
+              
+              return (
+                <div
+                  key={`${report.childName}-${idx}`}
+                  style={{ ...styles.reportBox, backgroundColor: colors[idx % colors.length] }}
+                  onClick={() => handleReportSelect(report)}
+                >
+                  <div 
+                    style={{
+                      ...styles.reportStatus,
+                      ...(hasSubmittedReport ? styles.reportStatusSubmitted : styles.reportStatusPending)
+                    }}
                   >
-                    <div 
-                      style={{
-                        ...styles.reportStatus,
-                        ...(hasSubmittedReport ? styles.reportStatusSubmitted : styles.reportStatusPending)
-                      }}
-                    >
-                      {hasSubmittedReport ? '✓' : '!'}
-                    </div>
-                    <strong>{report.childName}</strong>
-                    <div style={{ fontSize: '10px', marginTop: '5px' }}>
-                      {hasSubmittedReport ? 'Report Submitted' : 'Pending Report'}
-                    </div>
+                    {hasSubmittedReport ? '✓' : '!'}
                   </div>
-                );
-              })}
-            </div>
-          )}
-          <button style={styles.backButton} onClick={() => navigate('/')}>Back to Home</button>
-        </>
-      ) : (
-        <form style={styles.formContainer} onSubmit={handleUpdate}>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#4e342e' }}>
-            {selectedReport.id ? 'Update Daily Report' : 'Create Daily Report'}
-          </h2>
-
-          <label style={styles.label}>Child's Name</label>
-          <input 
-            type='text' 
+                  <strong>{report.childName}</strong>
+                  <div style={{ fontSize: '10px', marginTop: '5px' }}>
+                    {hasSubmittedReport ? 'Report Submitted' : 'Pending Report'}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </>
+    ) : (
+      <div style={styles.formContainer}>
+        <div style={styles.header}>
+          <span style={styles.backArrow} onClick={() => setSelectedReport(null)}>
+            ←
+          </span>
+          Daily Updates
+        </div>
+        
+        <form style={styles.formContent} onSubmit={handleUpdate}>
+          <label style={styles.label}>Name</label>
+          <select 
             name='childName' 
-            style={{ ...styles.input, backgroundColor: '#e9ecef' }} 
+            style={styles.select} 
             value={formData.childName} 
-            readOnly 
-          />
-
-          {formData.emails.length > 0 && (
-            <>  
-              <label style={styles.label}>Email{formData.emails.length > 1 ? 's' : ''}</label>
-              {formData.emails.map((em,i) => (
-                <input 
-                  key={i} 
-                  type='text' 
-                  readOnly 
-                  value={em} 
-                  style={{ ...styles.input, backgroundColor: '#e9ecef' }} 
-                />
-              ))}
-            </>
-          )}
+            onChange={handleChange}
+            disabled
+          >
+            <option value={formData.childName}>{formData.childName}</option>
+          </select>
 
           {/* In/Out Time */}
-          <label style={styles.label}>In and Out Time</label>
-          <div style={styles.inlineContainer}>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>In</label>
-              <input 
-                type='time' 
+          <div style={styles.timeContainer}>
+            <div style={styles.timeField}>
+              <label style={styles.timeLabel}>In</label>
+              <select 
+                style={styles.select} 
                 name='inTime' 
-                style={styles.inputTime}  
                 value={formData.inTime} 
-                onChange={handleChange} 
-              />
+                onChange={(e) => setFormData(prev => ({ ...prev, inTime: e.target.value }))}
+              >
+                <option value="">Select Time</option>
+                <option value="07:00">7:00 Am</option>
+                <option value="07:30">7:30 Am</option>
+                <option value="08:00">8:00 Am</option>
+                <option value="08:30">8:30 Am</option>
+                <option value="09:00">9:00 Am</option>
+                <option value="09:30">9:30 Am</option>
+                <option value="10:00">10:00 Am</option>
+              </select>
             </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>Out</label>
-              <input 
-                type='time' 
+            <div style={styles.timeField}>
+              <label style={styles.timeLabel}>Out</label>
+              <select 
+                style={styles.select} 
                 name='outTime' 
-                style={styles.inputTime}  
                 value={formData.outTime} 
-                onChange={handleChange} 
-              />
+                onChange={(e) => setFormData(prev => ({ ...prev, outTime: e.target.value }))}
+              >
+                <option value="">Select Time</option>
+                <option value="14:00">2:00 Pm</option>
+                <option value="14:30">2:30 Pm</option>
+                <option value="15:00">3:00 Pm</option>
+                <option value="15:30">3:30 Pm</option>
+                <option value="16:00">4:00 Pm</option>
+                <option value="16:30">4:30 Pm</option>
+                <option value="17:00">5:00 Pm</option>
+              </select>
             </div>
           </div>
 
-          {/* Snack and Meal */}
-          <label style={styles.label}>Child ate Snacks</label>
-          <div style={styles.radioGroup}>
-            {['None', 'Some', 'Half', 'Most', 'All'].map(opt => (
-              <label key={opt} style={{ fontWeight: '500' }}>
-               <input
-                type='radio'
-                name='snack'
-                value={opt}
-                onChange={handleChange}
-                checked={formData.snack===opt}
-               /> {opt}
-              </label>
+          {/* Snack */}
+          <label style={styles.label}>Child Ate - Snacks</label>
+          <div style={styles.buttonGroup}>
+            {['All', 'Some', 'None'].map(opt => (
+              <button
+                key={opt}
+                type="button"
+                style={{
+                  ...styles.toggleButton,
+                  ...(formData.snack === opt ? styles.toggleButtonActive : {})
+                }}
+                onClick={() => setFormData(prev => ({ ...prev, snack: opt }))}
+              >
+                {opt}
+              </button>
             ))}
           </div>
-          <label style={styles.label}>Child ate Meals</label>
-          <div style={styles.radioGroup}>
-            {['None', 'Some', 'Half', 'Most', 'All'].map(opt => (
-              <label key={opt} style={{ fontWeight: '500' }}>
-                <input
-                  type='radio'
-                  name='meal'
-                  value={opt}
-                  onChange={handleChange}
-                  checked={formData.meal===opt}
-                /> {opt}
-              </label>
+
+          {/* Meal */}
+          <label style={styles.label}>Child Ate - Meal</label>
+          <div style={styles.buttonGroup}>
+            {['All', 'Some', 'None'].map(opt => (
+              <button
+                key={opt}
+                type="button"
+                style={{
+                  ...styles.toggleButton,
+                  ...(formData.meal === opt ? styles.toggleButtonActive : {})
+                }}
+                onClick={() => setFormData(prev => ({ ...prev, meal: opt }))}
+              >
+                {opt}
+              </button>
             ))}
           </div>
 
           {/* Sleep */}
-          <label style={styles.label}>Child Slept</label>
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ fontWeight: '500' }}>
-              <input 
-                type='checkbox' 
-                name='sleepNot' 
-                checked={formData.sleepNot} 
-                onChange={handleChange} 
-              /> Child did not sleep in school
-            </label>
-          </div>
-          <div style={styles.inlineContainer}>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>From</label>
-              <input
-                type='time'
+          <label style={styles.label}>Child slept</label>
+          
+          <div style={styles.timeContainer}>
+            <div style={styles.timeField}>
+              <label style={styles.timeLabel}>From</label>
+              <select
+                style={styles.select}
                 name='sleepFrom'
-                style={styles.inputTime}
                 value={formData.sleepFrom}
-                onChange={handleChange}
+                onChange={(e) => setFormData(prev => ({ ...prev, sleepFrom: e.target.value }))}
                 disabled={formData.sleepNot}
-              />
+              >
+                <option value="">Select Time</option>
+                <option value="12:00">12:00 Pm</option>
+                <option value="12:30">12:30 Pm</option>
+                <option value="13:00">1:00 Pm</option>
+                <option value="13:30">1:30 Pm</option>
+                <option value="14:00">2:00 Pm</option>
+              </select>
             </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontSize: '14px', fontWeight: '500' }}>To</label>
-              <input
-                type='time'
+            <div style={styles.timeField}>
+              <label style={styles.timeLabel}>To</label>
+              <select
+                style={styles.select}
                 name='sleepTo'
-                style={styles.inputTime}
                 value={formData.sleepTo}
-                onChange={handleChange}
+                onChange={(e) => setFormData(prev => ({ ...prev, sleepTo: e.target.value }))}
                 disabled={formData.sleepNot}
-              />
+              >
+                <option value="">Select Time</option>
+                <option value="13:00">1:00 Pm</option>
+                <option value="13:30">1:30 Pm</option>
+                <option value="14:00">2:00 Pm</option>
+                <option value="14:30">2:30 Pm</option>
+                <option value="15:00">3:00 Pm</option>
+              </select>
             </div>
           </div>
 
-          {/* No Diaper */}
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ fontWeight: '600', display: 'flex', alignItems: 'center' }}>
-              <input 
-                type='checkbox' 
-                name='noDiaper' 
-                checked={formData.noDiaper} 
-                onChange={handleChange} 
-                style={{ marginRight: '10px' }} 
-              /> No Diaper
-            </label>
+          {/* Diaper Changes / Toilet Visits */}
+          <label style={styles.label}>Child Diaper Was Changed</label>
+          <div style={styles.timeContainer}>
+            <div style={styles.timeField}>
+              <label style={styles.timeLabel}>No of times</label>
+              <select 
+                style={styles.select} 
+                name='diaperChanges' 
+                value={formData.diaperChanges} 
+                onChange={handleChange}
+                disabled={formData.noDiaper}
+              >
+                <option value="">Select</option>
+                <option value="0">00</option>
+                <option value="1">01</option>
+                <option value="2">02</option>
+                <option value="3">03</option>
+                <option value="4">04</option>
+                <option value="5">05</option>
+              </select>
+            </div>
+            <div style={styles.timeField}>
+              <label style={styles.timeLabel}>No of poops</label>
+              <select 
+                style={styles.select} 
+                name='poops' 
+                value={formData.poops} 
+                onChange={handleChange}
+              >
+                <option value="">Select</option>
+                <option value="0">00</option>
+                <option value="1">01</option>
+                <option value="2">02</option>
+                <option value="3">03</option>
+                <option value="4">04</option>
+                <option value="5">05</option>
+              </select>
+            </div>
+          </div>
+                    
+
+
+          {/* Feelings */}
+          <label style={styles.label}>Child was feeling</label>
+          <div style={styles.checkboxContainer}>
+            {feelingsOptions.map(opt => (
+              <button
+                key={opt.label}
+                type="button"
+                style={{
+                  ...styles.checkboxButton,
+                  ...(formData.feelings.includes(opt.label) ? styles.checkboxButtonActive : {})
+                }}
+                onClick={() => {
+                  const newFeelings = formData.feelings.includes(opt.label)
+                    ? formData.feelings.filter(f => f !== opt.label)
+                    : [...formData.feelings, opt.label];
+                  setFormData(prev => ({ ...prev, feelings: newFeelings }));
+                }}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
 
-          {/* Conditional Diaper vs Toilet Visits */}
-          {formData.noDiaper ? (
+          {/* Photo Upload */}
+          <label style={styles.label}>Add photos</label>
+          <div style={styles.photoUpload}>
+            <div style={styles.photoUploadIcon}>⊕</div>
+            <div style={styles.photoUploadText}>Add photos here</div>
+          </div>
+
+          {/* Teacher's Note */}
+          <label style={styles.label}>Teacher's note</label>
+                <>
+          <style>
+            {`
+              .custom-placeholder::placeholder {
+                font-size: 10px; 
+                font-weight: 600;
+                color: '#98989A';
+              }
+            `}
+          </style>
+
+          <textarea 
+            name='notes' 
+            rows='4' 
+            style={styles.input} 
+            value={formData.notes} 
+            onChange={handleChange}
+            placeholder="Type any keywords"
+            className="custom-placeholder"
+          />
+        </>
+
+
+          {/* Theme of the Day 
+          {availableThemes.length > 0 && (
             <>
-              <label style={styles.label}>Toilet Visits</label>
-              <div style={styles.radioGroup}>
-                {radioOptions.map(opt => (
-                  <label key={opt} style={{ fontWeight: '500' }}>
-                    <input 
-                      type='radio' 
-                      name='toiletVisits' 
-                      value={String(opt)} 
-                      onChange={handleChange} 
-                      checked={formData.toiletVisits===String(opt)}  
-                    /> {opt}
-                  </label>
-                ))}
-              </div>
-            </>
-          ) : (
-            <>
-              <label style={styles.label}>Diaper Changes</label>
-              <div style={styles.radioGroup}>
-                {radioOptions.map(opt => (
-                  <label key={opt} style={{ fontWeight: '500' }}>
-                    <input 
-                      type='radio' 
-                      name='diaperChanges' 
-                      value={String(opt)} 
-                      onChange={handleChange} 
-                      checked={formData.diaperChanges===String(opt)}  
-                    /> {opt}
-                  </label>
+              <label style={styles.label}>Theme of the Day</label>
+              <div style={styles.checkboxContainer}>
+                {availableThemes.map(opt => (
+                  <button
+                    key={opt}
+                    type="button"
+                    style={{
+                      ...styles.checkboxButton,
+                      ...(formData.themeOfTheDay.includes(opt) ? styles.checkboxButtonActive : {})
+                    }}
+                    onClick={() => {
+                      const newThemes = formData.themeOfTheDay.includes(opt)
+                        ? formData.themeOfTheDay.filter(t => t !== opt)
+                        : [...formData.themeOfTheDay, opt];
+                      setFormData(prev => ({ ...prev, themeOfTheDay: newThemes }));
+                    }}
+                  >
+                    {opt}
+                  </button>
                 ))}
               </div>
             </>
           )}
-
-          {/* Bowel movements */}
-          <label style={styles.label}>Bowel movements</label>
-          <div style={styles.radioGroup}>
-            {radioOptions.map(opt => (
-              <label key={opt} style={{ fontWeight: '500' }}>
-                <input 
-                  type='radio' 
-                  name='poops' 
-                  value={String(opt)} 
-                  onChange={handleChange} 
-                  checked={formData.poops===String(opt)}  
-                /> {opt}
-              </label>
-            ))}
-          </div>
-
-          {/* Feelings */}
-          <label style={styles.label}>Child was Feeling</label>
-          <div style={{ marginBottom: '20px' }}>
-            {feelingsOptions.map(opt => (
-              <label key={opt.label} style={{ fontWeight: '500', marginRight: '20px' }}>
-                <input 
-                  type='checkbox' 
-                  name='feelings' 
-                  value={opt.label} 
-                  onChange={handleChange} 
-                  checked={formData.feelings.includes(opt.label)} 
-                /> {opt.label} {opt.emoji}
-              </label>
-            ))}
-          </div>
-
-          {/* Theme of the Day */}
-          <label style={styles.label}>Theme of the Day</label>
-          <div style={{ marginBottom: '20px' }}>
-            {availableThemes.length > 0 ? availableThemes.map(opt => (
-              <label key={opt} style={{ fontWeight: '500', marginRight: '10px' }}>
-                <input 
-                  type='checkbox' 
-                  name='themeOfTheDay' 
-                  value={opt} 
-                  onChange={handleChange} 
-                  checked={formData.themeOfTheDay.includes(opt)} 
-                /> {opt}
-              </label>
-            )) : <p>No themes available</p>}
-          </div>
-
-          {/* Notes */}
-          <label style={styles.label}>Teacher's Note</label>
-          <textarea 
-            name='notes' 
-            rows='3' 
-            style={styles.input} 
-            value={formData.notes} 
-            onChange={handleChange} 
-          />
-
-          {/* Ouch Report */}
+          */}
+          {/* Ouch Report 
           <div style={{ marginBottom: '15px' }}>
-            <label style={styles.label}>
+            <label style={{ fontWeight: '500', display: 'flex', alignItems: 'center' }}>
               <input 
                 type="checkbox" 
                 name="ouch" 
                 checked={formData.ouch} 
-                onChange={handleChange} 
+                onChange={handleChange}
+                style={{ marginRight: '8px' }}
               /> Ouch Report
             </label>
             {formData.ouch && (
@@ -753,8 +909,9 @@ const DailyReport = () => {
               />
             )}
           </div>
+          */}
 
-          {/* Common Parents Note */}
+          {/* Common Parents Note 
           <div style={{ marginBottom: '20px' }}>
             <label style={styles.label}>Common Note for Parents</label>
             <textarea 
@@ -766,21 +923,16 @@ const DailyReport = () => {
               placeholder="Common note for parents" 
             />
           </div>
+          */}
 
-          <button type="submit" style={styles.button}>
-            {selectedReport.id ? 'Update Report' : 'Create Report'}
-          </button>
-          <button 
-            type="button" 
-            style={styles.backButton} 
-            onClick={() => setSelectedReport(null)}
-          >
-            Back to Reports List
+          <button type="submit" style={styles.submitButton}>
+            Submit
           </button>
         </form>
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 };
 
 export default DailyReport;

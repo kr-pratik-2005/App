@@ -1,282 +1,368 @@
-// src/pages/ThemeManagement.jsx
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase/firebase';
+import { ChevronLeft, X, Calendar } from 'lucide-react';
 
 const ThemeManagement = () => {
-  const navigate = useNavigate();
+  // Get current week number and date range
+  const getCurrentWeekNumber = () => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 1);
+    const days = Math.floor((now - start) / (24 * 60 * 60 * 1000));
+    return Math.ceil((days + start.getDay() + 1) / 7).toString().padStart(2, '0');
+  };
 
-  // State for Theme of the Week tags & Theme of the Day selections
-  const [tags, setTags] = useState([]);
-  const [dayThemes, setDayThemes] = useState([]);
-
-  // State for today's Common Parents Note
-  const [noteInput, setNoteInput] = useState('');
-
-  // Temp input for adding a new tag
-  const [tagInput, setTagInput] = useState('');
-
-  // Helper: get today's date as YYYY‑MM‑DD in local time
-  const todayStr = (() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  })();
-
-  // Load tags, dayThemes, and today's commonParentsNote
-  useEffect(() => {
-    const loadConfig = async () => {
-      try {
-        // Build the same doc reference inside the effect
-        const themeDocRef = doc(db, 'appConfig', 'themeOfTheWeek');
-        const snap = await getDoc(themeDocRef);
-        if (!snap.exists()) return;
-        const data = snap.data();
-
-        setTags(data.theme || []);
-        setDayThemes(data.themeOfTheDay || []);
-
-        // Only prefill if it was saved today
-        if (data.commonParentsNoteDate === todayStr) {
-          setNoteInput(data.commonParentsNote || '');
-        } else {
-          setNoteInput('');
-        }
-      } catch (err) {
-        console.error('Error loading config:', err);
-      }
+  const getWeekDateRange = (weekNum) => {
+    const year = new Date().getFullYear();
+    const firstDay = new Date(year, 0, 1);
+    const daysToAdd = (parseInt(weekNum) - 1) * 7 - firstDay.getDay();
+    const weekStart = new Date(firstDay.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
+    const weekEnd = new Date(weekStart.getTime() + 6 * 24 * 60 * 60 * 1000);
+    
+    const formatDate = (date) => {
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
     };
+    
+    return `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+  };
 
-    loadConfig();
-  }, [todayStr]);
+  const [weekTheme, setWeekTheme] = useState(getCurrentWeekNumber());
+  const [themes, setThemes] = useState(['Animals', 'Plants']);
+  const [languages, setLanguages] = useState(['A', 'B', 'C']);
+  const [numeracy, setNumeracy] = useState(['1', '2']);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Helper to merge updates into the same config document
-  const saveConfig = async (update) => {
-    try {
-      const themeDocRef = doc(db, 'appConfig', 'themeOfTheWeek');
-      await setDoc(themeDocRef, update, { merge: true });
-    } catch (err) {
-      console.error('Error saving config:', err);
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  const handleRemoveTag = (category, tagToRemove) => {
+    switch(category) {
+      case 'themes':
+        setThemes(themes.filter(theme => theme !== tagToRemove));
+        break;
+      case 'languages':
+        setLanguages(languages.filter(lang => lang !== tagToRemove));
+        break;
+      case 'numeracy':
+        setNumeracy(numeracy.filter(num => num !== tagToRemove));
+        break;
     }
   };
 
-  // Tag management
-  const addTag = async () => {
-    const t = tagInput.trim();
-    if (!t || tags.includes(t)) return;
-    const newTags = [...tags, t];
-    setTags(newTags);
-    setTagInput('');
-    await saveConfig({ theme: newTags });
+  const handleReset = () => {
+    const currentWeek = getCurrentWeekNumber();
+    setWeekTheme(currentWeek);
+    setThemes(['Animals', 'Plants']);
+    setLanguages(['A', 'B', 'C']);
+    setNumeracy(['1', '2']);
   };
 
-  const removeTag = async (tag) => {
-    const newTags = tags.filter(t => t !== tag);
-    setTags(newTags);
-    await saveConfig({ theme: newTags });
-
-    // If it was in today's selection, remove it too
-    if (dayThemes.includes(tag)) {
-      const newDay = dayThemes.filter(t => t !== tag);
-      setDayThemes(newDay);
-      await saveConfig({ themeOfTheDay: newDay });
-    }
-  };
-
-  // Theme-of-the-Day checkbox handler
-  const handleDayThemeChange = async (e, tag) => {
-    const checked = e.target.checked;
-    const newDay = checked
-      ? [...dayThemes, tag]
-      : dayThemes.filter(t => t !== tag);
-
-    setDayThemes(newDay);
-    await saveConfig({ themeOfTheDay: newDay });
-  };
-
-  // Save today's Common Parents Note with a date stamp
-  const saveCommonNote = async () => {
-    await saveConfig({
-      commonParentsNote: noteInput,
-      commonParentsNoteDate: todayStr
+  const handleSubmit = () => {
+    console.log('Form submitted:', {
+      week: weekTheme,
+      themes,
+      languages,
+      numeracy
     });
   };
 
-  // === styles ===
   const styles = {
     container: {
-      padding: '20px',
-      fontFamily: 'Inter, Arial, sans-serif',
-      background: 'linear-gradient(135deg, #ffecd2, #fcb69f)',
+      maxWidth: isMobile ? '375px' : '100%',
+      margin: '0 auto',
+      backgroundColor: '#ffffff',
       minHeight: '100vh',
-    },
-    header: { marginBottom: '20px', textAlign: 'center' },
-    title: { fontSize: '28px', color: '#d62828' },
-    section: {
-      marginBottom: '40px',
-      padding: '10px 20px',
-      backgroundColor: '#fffbee',
-      borderRadius: '8px',
-      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    },
-    sectionTitle: {
-      fontSize: '20px',
-      color: '#0077b6',
-      borderBottom: '1px solid #0077b6',
-      paddingBottom: '5px',
-      marginBottom: '15px',
-    },
-    inputRow: {
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       display: 'flex',
-      justifyContent: 'center',
+      flexDirection: 'column',
+    },
+    header: {
+      display: 'flex',
       alignItems: 'center',
-      marginBottom: '15px',
+      padding: isMobile ? '16px 20px' : '24px 40px',
+      backgroundColor: '#ffffff',
+      borderBottom: '1px solid #e9ecef',
+      position: 'sticky',
+      top: 0,
+      zIndex: 10,
     },
-    tagInput: {
-      width: '70%',
-      padding: '8px',
-      borderRadius: '6px',
-      border: '1px solid #ccc',
-      fontSize: '16px',
-      marginRight: '10px',
-    },
-    addButton: {
-      backgroundColor: '#ffba08',
-      color: '#333',
-      padding: '8px 12px',
-      borderRadius: '6px',
+    backButton: {
+      background: 'none',
       border: 'none',
+      padding: '4px',
       cursor: 'pointer',
-      fontWeight: 'bold',
+      marginRight: '12px',
+    },
+    headerTitle: {
+      fontSize: isMobile ? '18px' : '24px',
+      fontWeight: '600',
+      color: '#212529',
+      margin: 0,
+    },
+    content: {
+      flex: 1,
+      padding: isMobile ? '20px' : '40px',
+      maxWidth: isMobile ? 'none' : '800px',
+      margin: isMobile ? '0' : '0 auto',
+      width: '100%',
+      boxSizing: 'border-box',
+    },
+    section: {
+      marginBottom: isMobile ? '24px' : '32px',
+    },
+    weekSection: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: isMobile ? '16px' : '24px',
+      marginBottom: isMobile ? '24px' : '32px',
+    
+    },
+    weekLabel: {
+      fontSize: isMobile ? '16px' : '18px',
+      fontWeight: '600',
+      color: '#212529',
+      minWidth: isMobile ? 'auto' : '80px',
+    },
+    weekInputContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px',
+    },
+    weekInput: {
+      width: isMobile ? '60px' : '80px',
+      padding: isMobile ? '12px 16px' : '16px 20px',
+      border: '1px solid #dee2e6',
+      borderRadius: isMobile ? '20px' : '24px',
+      fontSize: isMobile ? '16px' : '18px',
+      textAlign: 'center',
+      backgroundColor: '#ffffff',
+      fontWeight: '500',
+    },
+    dateRange: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      padding: isMobile ? '12px 16px' : '16px 20px',
+      backgroundColor: '#ffffff',
+      border: '1px solid #dee2e6',
+      borderRadius: isMobile ? '20px' : '24px',
+      fontSize: isMobile ? '14px' : '16px',
+      color: '#6c757d',
+    },
+    themeContainer: {
+      
+      borderRadius: isMobile ? '12px' : '16px',
+      padding: isMobile ? '16px' : '24px',
+      
+    },
+    themeRow: {
+      display: 'flex',
+      alignItems: isMobile ? 'center' : 'flex-start',
+      gap: isMobile ? '12px' : '24px',
+      marginBottom: isMobile ? '24px' : '32px',
+      flexDirection: isMobile ? 'row' : 'row',
+    },
+    themeLabel: {
+      fontSize: isMobile ? '16px' : '18px',
+      color: '#212529',
+      fontWeight: '600',
+      minWidth: isMobile ? 'auto' : '150px',
+      alignSelf: isMobile ? 'center' : 'center',
+    },
+    themeValue: {
+      flex: 1,
+      width: '100%',
     },
     tagContainer: {
       display: 'flex',
+      gap: isMobile ? '8px' : '12px',
       flexWrap: 'wrap',
-      gap: '5px',
-      justifyContent: 'center',
-    },
-    tag: {
-      backgroundColor: '#0077b6',
-      color: '#fff',
-      padding: '5px 10px',
-      borderRadius: '12px',
-      fontSize: '14px',
-      cursor: 'pointer',
-    },
-    checkboxList: {
-      display: 'flex',
-      flexDirection: 'column',
+      padding: isMobile ? '12px 16px' : '16px 20px',
+      backgroundColor: '#ffffff',
+      borderRadius: isMobile ? '20px' : '24px',
+      border: '1px solid #e9ecef',
+      minHeight: isMobile ? '40px' : '50px',
       alignItems: 'center',
     },
-    checkboxItem: {
-      fontSize: '16px',
-      marginBottom: '8px',
-      cursor: 'pointer',
+    tag: {
+      backgroundColor: '#ffffff',
+      color: '#6c757d',
+      backgroundColor: '#E9E5E5',
+      padding: isMobile ? '8px 12px' : '10px 16px',
+      borderRadius: isMobile ? '16px' : '20px',
+      fontSize: isMobile ? '14px' : '16px',
+      border: '1px solid #dee2e6',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '6px',
+      fontWeight: '500',
     },
-    noteTextarea: {
-      width: '80%',
-      minHeight: '80px',
-      padding: '8px',
-      borderRadius: '6px',
-      border: '1px solid #ccc',
-      fontSize: '16px',
-      margin: '0 auto 10px',
-      display: 'block',
-    },
-    saveNoteBtn: {
-      backgroundColor: '#4caf50',
-      color: 'white',
-      padding: '8px 12px',
+    removeTag: {
+      background: 'none',
       border: 'none',
-      borderRadius: '6px',
+      color: '#6c757d',
       cursor: 'pointer',
-      fontWeight: 'bold',
-      display: 'block',
-      margin: '0 auto',
+      padding: '0',
+      display: 'flex',
+      alignItems: 'center',
+      opacity: 0.7,
     },
-    backButton: {
-      backgroundColor: '#f94144',
-      color: '#fff',
-      padding: '8px 12px',
-      borderRadius: '6px',
+    buttonContainer: {
+      position: isMobile ? 'fixed' : 'static',
+      bottom: isMobile ? '20px' : 'auto',
+      left: isMobile ? '20px' : 'auto',
+      right: isMobile ? '20px' : 'auto',
+      maxWidth: isMobile ? '335px' : '800px',
+      margin: isMobile ? '0 auto' : '40px auto 0',
+      display: 'flex',
+      gap: isMobile ? '12px' : '16px',
+      padding: isMobile ? '0' : '0 40px',
+      justifyContent: isMobile ? 'stretch' : 'flex-end',
+    },
+    button: {
+      padding: isMobile ? '14px 24px' : '16px 32px',
+      borderRadius: isMobile ? '20px' : '24px',
+      fontSize: isMobile ? '16px' : '18px',
+      fontWeight: '600',
       border: 'none',
       cursor: 'pointer',
-      fontWeight: 'bold',
-      marginTop: '20px',
-      display: 'block',
-      marginLeft: 'auto',
-      marginRight: 'auto',
+      minWidth: isMobile ? 'auto' : '120px',
+    },
+    resetButton: {
+      backgroundColor: '#ffffff',
+      color: '#565657',
+      border: '1px solid #dee2e6',
+      flex: isMobile ? 1 : 'none',
+    },
+    submitButton: {
+      backgroundColor: '#D3F26A',
+      color: '#565657',
+      flex: isMobile ? 1 : 'none',
     },
   };
 
   return (
     <div style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={styles.title}>Theme Management</h1>
-      </header>
+      {/* Header */}
+      <div style={styles.header}>
+        <button style={styles.backButton}>
+          <ChevronLeft size={isMobile ? 24 : 28} color="#212529" />
+        </button>
+        <h1 style={styles.headerTitle}>Theme of the week</h1>
+      </div>
 
-      {/* Theme of the Week */}
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Theme of the Week</h2>
-        <div style={styles.inputRow}>
-          <input
-            type="text"
-            style={styles.tagInput}
-            placeholder="Enter a tag"
-            value={tagInput}
-            onChange={e => setTagInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addTag())}
-          />
-          <button style={styles.addButton} onClick={addTag}>
-            Add Tag
-          </button>
+      {/* Content */}
+      <div style={styles.content}>
+        {/* Week Selection */}
+        <div style={styles.weekSection}>
+          <span style={styles.weekLabel}>Week :</span>
+          <div style={styles.weekInputContainer}>
+            <input
+              type="number"
+              value={weekTheme}
+              onChange={(e) => setWeekTheme(e.target.value)}
+              style={styles.weekInput}
+              min="1"
+              max="52"
+            />
+            <div style={styles.dateRange}>
+              <span>{getWeekDateRange(weekTheme)}</span>
+              <Calendar size={isMobile ? 16 : 18} color="#6c757d" />
+            </div>
+          </div>
         </div>
-        <div style={styles.tagContainer}>
-          {tags.map(tag => (
-            <span key={tag} style={styles.tag} onClick={() => removeTag(tag)}>
-              {tag} &times;
+
+        {/* Theme Container */}
+        <div style={styles.themeContainer}>
+          {/* Theme of the week */}
+          <div style={styles.themeRow}>
+            <span style={styles.themeLabel}>
+              Theme of 
+              {isMobile ? <br /> : ' '}
+              the week :
             </span>
-          ))}
+
+            <div style={styles.themeValue}>
+              <div style={styles.tagContainer}>
+                {themes.map((theme, index) => (
+                  <div key={index} style={styles.tag}>
+                    {theme}
+                    <button 
+                      style={styles.removeTag}
+                      onClick={() => handleRemoveTag('themes', theme)}
+                    >
+                      <X size={isMobile ? 14 : 16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Language */}
+          <div style={styles.themeRow}>
+            <span style={styles.themeLabel}>Language :</span>
+            <div style={styles.themeValue}>
+              <div style={styles.tagContainer}>
+                {languages.map((lang, index) => (
+                  <div key={index} style={styles.tag}>
+                    {lang}
+                    <button 
+                      style={styles.removeTag}
+                      onClick={() => handleRemoveTag('languages', lang)}
+                    >
+                      <X size={isMobile ? 14 : 16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Numeracy */}
+          <div style={styles.themeRow}>
+            <span style={styles.themeLabel}>Numeracy :</span>
+            <div style={styles.themeValue}>
+              <div style={styles.tagContainer}>
+                {numeracy.map((num, index) => (
+                  <div key={index} style={styles.tag}>
+                    {num}
+                    <button 
+                      style={styles.removeTag}
+                      onClick={() => handleRemoveTag('numeracy', num)}
+                    >
+                      <X size={isMobile ? 14 : 16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Theme of the Day */}
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Theme of the Day</h2>
-        <div style={styles.checkboxList}>
-          {tags.length
-            ? tags.map(tag => (
-                <label key={tag} style={styles.checkboxItem}>
-                  <input
-                    type="checkbox"
-                    checked={dayThemes.includes(tag)}
-                    onChange={e => handleDayThemeChange(e, tag)}
-                    style={{ marginRight: '8px' }}
-                  />
-                  {tag}
-                </label>
-              ))
-            : <p>No tags created yet.</p>}
-        </div>
-      </div>
-
-      {/* Common Parents Note */}
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Common Note for Parents</h2>
-        <textarea
-          style={styles.noteTextarea}
-          placeholder="This note will appear on every Daily Report"
-          value={noteInput}
-          onChange={e => setNoteInput(e.target.value)}
-        />
-        <button style={styles.saveNoteBtn} onClick={saveCommonNote}>
-          Save Common Note
+      {/* Bottom Buttons */}
+      <div style={styles.buttonContainer}>
+        <button 
+          style={{...styles.button, ...styles.resetButton}}
+          onClick={handleReset}
+        >
+          Reset
+        </button>
+        <button 
+          style={{...styles.button, ...styles.submitButton}}
+          onClick={handleSubmit}
+        >
+          Submit
         </button>
       </div>
-
-      <button style={styles.backButton} onClick={() => navigate('/')}>
-        Back to Home
-      </button>
     </div>
   );
 };

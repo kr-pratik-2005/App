@@ -7,6 +7,7 @@ const ReportsPage = () => {
 
   const handleChildRecordClick = () => {
     console.log('Child Record clicked');
+     navigate('/child-data')
     // Navigate to child record page
   };
 

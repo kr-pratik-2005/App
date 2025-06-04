@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import DailyReport from './pages/DailyReport';
 import ThemeManagement from './pages/ThemeManagement';
 import Report from './pages/Report';
+import ChildData from './pages/ChildData';
 import Login from './pages/Login';
 import { auth } from './firebase/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -33,6 +34,7 @@ function App() {
         <Route path="/daily-report" element={user ? <DailyReport /> : <Navigate to="/login" />} />
         <Route path="/theme-management" element={user ? <ThemeManagement /> : <Navigate to="/login" />} />
         <Route path="/report" element={user ? <Report /> : <Navigate to="/login" />} />
+        <Route path="/child-data" element={user ? <ChildData /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );

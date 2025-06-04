@@ -607,7 +607,7 @@ const Home = () => {
     { 
       title: 'Child Record', 
       color: '#5A68B1', 
-      action: () => {} 
+      action: () => navigate('/child-data') 
     },
     { 
       title: 'Daily Updates', 

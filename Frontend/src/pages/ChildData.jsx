@@ -796,96 +796,84 @@ const ChildData = () => {
             </div>
 
             {/* Medical Information Section */}
-            <div style={styles.sectionCard}>
-            <div 
-                style={styles.sectionHeader}
-                onClick={() => toggleSection('medicalInfo')}
-            >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div style={styles.sectionNumber}>3</div>
-                <div style={styles.sectionTitle}>Medical Information</div>
-                </div>
-                {expandedSections.medicalInfo ? 
-                <ChevronUp size={20} style={styles.chevronIcon} /> : 
-                <ChevronDown size={20} style={styles.chevronIcon} />
-                }
-            </div>
-            
-            {expandedSections.medicalInfo && (
-                <div style={styles.sectionContent}>
-                {/* Medical Information */}
-                <label style={styles.label}>Medical Information</label>
+<div style={styles.sectionCard}>
+  <div 
+    style={styles.sectionHeader}
+    onClick={() => toggleSection('medicalInfo')}
+  >
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div style={styles.sectionNumber}>3</div>
+      <div style={styles.sectionTitle}>Medical Information</div>
+    </div>
+    {expandedSections.medicalInfo ? 
+      <ChevronUp size={20} style={styles.chevronIcon} /> : 
+      <ChevronDown size={20} style={styles.chevronIcon} />
+    }
+  </div>
+  
+  {expandedSections.medicalInfo && (
+    <div style={styles.sectionContent}>
+      {/* Medical Information */}
+      <label style={styles.label}>Medical Information</label>
+      <textarea
+        name="medicalNotes"
+        className="custom-placeholder"
+        style={{ ...styles.input, minHeight: '80px', resize: 'vertical' }}
+        value={formData.medicalNotes || ''}
+        onChange={handleChange}
+        placeholder="Type any keywords"
+      />
 
-                <textarea 
-                    name="medicalNotes" 
-                    className="custom-placeholder"
-                    style={{ ...styles.input, minHeight: '80px', resize: 'vertical' }}
-                    value={formData.medicalNotes} 
-                    onChange={handleChange}
-                    placeholder="Type any keywords"
-                />
-           
+      {/* Allergies */}
+      <label style={styles.label}>Does your child have any allergies</label>
+      <input
+        type="text"
+        name="allergies"
+        className="custom-placeholder"
+        style={styles.input}
+        value={formData.allergies || ''}
+        onChange={handleChange}
+        placeholder="Type any known allergies"
+      />
 
-               
-                {/* Allergies */}
-                <label style={styles.label}>Does your child have any allergies</label>
-               
-             
-                <input 
-                    type="text"
-                    name="allergies" 
-                    className="custom-placeholder"
-                    style={styles.input} 
-                    value={formData.allergies} 
-                    onChange={handleChange}
-                    placeholder="Type any known allergies"
-                />
-              
-                {/* Medication Details */}
-                <label style={styles.label}>Medication details of child</label>
-          
-                <input 
-                    type="text"
-                    name="medicationDetails" 
-                     className="custom-placeholder"
-                    style={styles.input} 
-                    value={formData.medicationDetails} 
-                    onChange={handleChange}
-                    placeholder="Type the medication detail here"
-                />
-              
+      {/* Medication Details */}
+      <label style={styles.label}>Medication details of child</label>
+      <input
+        type="text"
+        name="medicationDetails"
+        className="custom-placeholder"
+        style={styles.input}
+        value={formData.medicationDetails || ''}
+        onChange={handleChange}
+        placeholder="Type the medication detail here"
+      />
 
-                {/* Medication Needs */}
-                <label style={styles.label}>Medication needs, we must be aware of</label>
-             
-                <input 
-                    type="text"
-                    name="medicationNeeds" 
-                    className="custom-placeholder"
-                    style={styles.input} 
-                    value={formData.medicationNeeds} 
-                    onChange={handleChange}
-                    placeholder="Type the medication needs here"
-                />
-       
+      {/* Medication Needs */}
+      <label style={styles.label}>Medication needs, we must be aware of</label>
+      <input
+        type="text"
+        name="medicationNeeds"
+        className="custom-placeholder"
+        style={styles.input}
+        value={formData.medicationNeeds || ''}
+        onChange={handleChange}
+        placeholder="Type the medication needs here"
+      />
 
-                {/* Dietary Restrictions */}
-                <label style={styles.label}>Dietary restriction, we must be aware of</label>
-              
-             
-                <input 
-                    type="text"
-                    name="dietaryRestrictions" 
-                    className="custom-placeholder"
-                    style={styles.input} 
-                    value={formData.dietaryRestrictions} 
-                    onChange={handleChange}
-                    placeholder="Type the dietary restriction here"
-                />
-             
-                </div>
-            )}
-            </div>
+      {/* Dietary Restrictions */}
+      <label style={styles.label}>Dietary restriction, we must be aware of</label>
+      <input
+        type="text"
+        name="dietaryRestrictions"
+        className="custom-placeholder"
+        style={styles.input}
+        value={formData.dietaryRestrictions || ''}
+        onChange={handleChange}
+        placeholder="Type the dietary restriction here"
+      />
+    </div>
+  )}
+</div>
 
             {/* Developmental Information Section */}
             <div style={styles.sectionCard}>
